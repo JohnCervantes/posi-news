@@ -1,0 +1,18 @@
+<svg width="128" height="128" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Bot head -->
+  <rect x="16" y="24" width="96" height="80" rx="20" fill="#F0F6FF" stroke="#4A6CF7" stroke-width="4"></rect>
+  
+  <!-- Antenna -->
+  <line x1="64" y1="12" x2="64" y2="24" stroke="#4A6CF7" stroke-width="4" stroke-linecap="round"></line>
+  <circle cx="64" cy="8" r="6" fill="#4A6CF7"></circle>
+
+  <!-- Eyes -->
+  <circle cx="46" cy="60" r="8" fill="#4A6CF7"></circle>
+  <circle cx="82" cy="60" r="8" fill="#4A6CF7"></circle>
+
+  <!-- Smile -->
+  <path d="M44 78 C52 90, 76 90, 84 78" stroke="#4A6CF7" stroke-width="4" fill="none" stroke-linecap="round"></path>
+
+  <!-- “Posi” sparkle highlight -->
+  <path d="M30 40 L34 46 L40 48 L34 50 L30 56 L28 50 L22 48 L28 46 Z" fill="#FFD85A"></path>
+</svg>

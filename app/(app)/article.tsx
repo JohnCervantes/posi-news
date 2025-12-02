@@ -1,3 +1,4 @@
+import PosiBot from '@/components/PosiBot';
 import { Ionicons } from '@expo/vector-icons';
 import { Stack, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
@@ -8,11 +9,12 @@ export default function About() {
     const [article, setArticle] = useState<{ author: string, title: string, content: string, publishedat: string, urltoimage: string }>();
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
+    const apiUrl = process.env.EXPO_PUBLIC_API_URL;
 
     useEffect(() => {
         const fetchArticle = async () => {
             try {
-                const response = await fetch(`http://localhost:3000/article?article_id=${params.article_id}`);
+                const response = await fetch(`${apiUrl}/article?article_id=${params.article_id}`);
 
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
@@ -57,14 +59,18 @@ export default function About() {
                     headerBackTitle: 'Back to Uplifting Stories',
                 }}
             />
+            <PosiBot text={`Finished the read? Let's process the good stuff! Let's chat about your insights below.`}></PosiBot>
             {article && <ScrollView style={styles.container} >
                 <Text style={styles.header}>{article.title}</Text>
                 <Image source={{ uri: article.urltoimage }} style={styles.image} />
-                <Text><Ionicons name="calendar" size={16} color="blue" /> {new Date(article.publishedat).toLocaleDateString()}</Text>
+                <View style={styles.dateAndAuthor}>
+                    <Text><Ionicons name="calendar" size={16} color="blue" /> {new Date(article.publishedat).toLocaleDateString()}</Text>
+                    <Text style={styles.author}>By {article.author}</Text>
+                </View>
                 <Text style={styles.content}>
                     {article.content}
                 </Text>
-            </ScrollView>}
+            </ScrollView >}
         </>
     );
 }
@@ -82,13 +88,15 @@ const styles = StyleSheet.create({
         marginBottom: 10,
     },
     content: {
-        fontSize: 16,
-        lineHeight: 24,
+        fontSize: 18,
+        lineHeight: 27,
+        color: '#333333'
     },
     image: {
         width: '100%',
         height: 150,
-        marginBottom: 6
+        marginBottom: 6,
+        resizeMode: 'cover'
     },
     center: {
         flex: 1,
@@ -98,5 +106,16 @@ const styles = StyleSheet.create({
     errorText: {
         color: 'red',
         fontSize: 18,
-    }
+    },
+    dateAndAuthor: {
+        marginBottom: 30,
+        flexDirection: 'row',
+        justifyContent: 'space-between'
+    },
+    author: {
+        fontSize: 14,
+        fontWeight: "condensed",
+        textAlign: "right",
+        color: '#6a6a6aff'
+    },
 });

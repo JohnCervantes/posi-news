@@ -1,3 +1,4 @@
+import PosiBot from '@/components/PosiBot';
 import { Ionicons } from '@expo/vector-icons';
 import { Stack, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
@@ -8,11 +9,12 @@ export default function Index() {
   const [articles, setArticles] = useState([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const apiUrl = process.env.EXPO_PUBLIC_API_URL as string;
 
   useEffect(() => {
     const fetchArticles = async () => {
       try {
-        const response = await fetch('http://localhost:3000/');
+        const response = await fetch(apiUrl);
 
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
@@ -71,8 +73,9 @@ export default function Index() {
           headerBackTitle: 'Posi News',
         }}
       />
+      <PosiBot text={`Hi, I'm Posibot.\nMy purpose is to deliver some uplifting news to you!\nClick on a story to see the full content.`}></PosiBot>
       <View style={styles.container}>
-        <Text style={ styles.header}>Uplifting Stories</Text>
+        <Text style={styles.header}>Uplifting Stories</Text>
         <FlatList
           data={articles}
           renderItem={renderItem}
@@ -86,7 +89,7 @@ export default function Index() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 50,
+    paddingTop: 20,
     backgroundColor: '#f5f5f5',
   },
   center: {
@@ -97,7 +100,9 @@ const styles = StyleSheet.create({
   image: {
     width: '100%',
     height: 150,
-    marginBottom: 6
+    marginBottom: 10,
+    marginTop: 10,
+    resizeMode: 'cover'
   },
   header: {
     fontSize: 24,
@@ -136,7 +141,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "condensed",
     textAlign: "right",
-    color: '#333333'
+    color: '#6a6a6aff'
   },
   errorText: {
     color: 'red',
