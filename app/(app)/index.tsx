@@ -1,3 +1,4 @@
+import AnimatedWrapper from '@/components/AnimatedWrapper';
 import PosiBot from '@/components/PosiBot';
 import { Ionicons } from '@expo/vector-icons';
 import { Stack, useRouter } from "expo-router";
@@ -73,7 +74,9 @@ export default function Index() {
           headerBackTitle: 'Posi News',
         }}
       />
-      <PosiBot text={`Hi, I'm Posibot.\nMy purpose is to deliver some uplifting news to you!\nClick on a story to see the full content.`}></PosiBot>
+      <AnimatedWrapper TOOLTIP_KEY='@PosiNews:FeatureATooltipSeen'>
+        <PosiBot text={`Hi, I'm Posibot.\nI'm here to deliver some uplifting news to you!\nClick on a story to see the full content.`}></PosiBot>
+      </AnimatedWrapper>
       <View style={styles.container}>
         <Text style={styles.header}>Uplifting Stories</Text>
         <FlatList

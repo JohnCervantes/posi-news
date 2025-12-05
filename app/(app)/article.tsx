@@ -1,8 +1,11 @@
+import AnimatedWrapper from '@/components/AnimatedWrapper';
+import ChatBox from '@/components/ChatBox';
 import PosiBot from '@/components/PosiBot';
 import { Ionicons } from '@expo/vector-icons';
 import { Stack, useLocalSearchParams } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, Image, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { KeyboardAvoidingView, KeyboardProvider } from 'react-native-keyboard-controller';
 
 export default function About() {
     const params = useLocalSearchParams();
@@ -10,6 +13,7 @@ export default function About() {
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
     const apiUrl = process.env.EXPO_PUBLIC_API_URL;
+    const scrollViewRef = useRef(null);
 
     useEffect(() => {
         const fetchArticle = async () => {
@@ -59,18 +63,33 @@ export default function About() {
                     headerBackTitle: 'Back to Uplifting Stories',
                 }}
             />
-            <PosiBot text={`Finished the read? Let's process the good stuff! Let's chat about your insights below.`}></PosiBot>
-            {article && <ScrollView style={styles.container} >
-                <Text style={styles.header}>{article.title}</Text>
-                <Image source={{ uri: article.urltoimage }} style={styles.image} />
-                <View style={styles.dateAndAuthor}>
-                    <Text><Ionicons name="calendar" size={16} color="blue" /> {new Date(article.publishedat).toLocaleDateString()}</Text>
-                    <Text style={styles.author}>By {article.author}</Text>
-                </View>
-                <Text style={styles.content}>
-                    {article.content}
-                </Text>
-            </ScrollView >}
+            <AnimatedWrapper TOOLTIP_KEY='@PosiNews:FeatureBTooltipSeen'>
+                <PosiBot text={`Finished the read? Let's process the good stuff! Let's chat about your insights below.`}></PosiBot>
+            </AnimatedWrapper>
+            {article &&
+                <KeyboardProvider>
+                    <KeyboardAvoidingView
+                        behavior="padding" // or "height", "position"
+                        keyboardVerticalOffset={100}
+                        style={{ flex: 1 }}
+                    >
+                        <View style={styles.container}>
+                            <ScrollView keyboardShouldPersistTaps="always">
+                                <Text style={styles.header}>{article.title}</Text>
+                                <Image source={{ uri: article.urltoimage }} style={styles.image} />
+                                <View style={styles.dateAndAuthor}>
+                                    <Text><Ionicons name="calendar" size={16} color="blue" /> {new Date(article.publishedat).toLocaleDateString()}</Text>
+                                    <Text style={styles.author}>By {article.author}</Text>
+                                </View>
+                                <Text style={styles.content}>
+                                    {article.content}
+                                </Text>
+                                <ChatBox article_id={params.article_id}></ChatBox>
+                            </ScrollView >
+                        </View>
+                    </KeyboardAvoidingView>
+                </KeyboardProvider>
+            }
         </>
     );
 }
