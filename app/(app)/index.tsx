@@ -1,6 +1,7 @@
 import AnimatedWrapper from '@/components/AnimatedWrapper';
 import PosiBot from '@/components/PosiBot';
 import { Ionicons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { ActivityIndicator, FlatList, Image, Pressable, StyleSheet, Text, View } from 'react-native';
@@ -13,6 +14,7 @@ export default function Index() {
   const apiUrl = process.env.EXPO_PUBLIC_API_URL as string;
 
   useEffect(() => {
+    AsyncStorage.clear();
     const fetchArticles = async () => {
       try {
         const response = await fetch(apiUrl);
@@ -36,6 +38,7 @@ export default function Index() {
   }, []);
 
   if (isLoading) {
+
     return (
       <View style={styles.center}>
         <ActivityIndicator size="large" color="#0000ff" />
@@ -60,13 +63,11 @@ export default function Index() {
       <Text style={styles.nameText}><Ionicons name="calendar" size={16} color="blue" /> {new Date(item.publishedat).toLocaleDateString()}</Text>
       <Text style={styles.title}>{item.title}</Text>
 
-      <Image source={item.urltoimage === "" ? require("@/assets/images/default-article.png") : { uri: item.urltoimage} } style={styles.image} />
+      <Image source={item.urltoimage === "" ? require("@/assets/images/default-article.png") : { uri: item.urltoimage }} style={styles.image} />
       <Text style={styles.nameText}>{item.description}</Text>
       <Text style={styles.author}>By {item.author}</Text>
     </Pressable>
   );
-
-  //{ uri: item.urltoimage !== "" ? "@/assets/images/default-article.png" : item.urltoimage }
 
   return (
     <>

@@ -1,15 +1,16 @@
 import AnimatedWrapper from '@/components/AnimatedWrapper';
 import ChatBox from '@/components/ChatBox';
 import PosiBot from '@/components/PosiBot';
+import shareArticle from '@/components/Share';
 import { Ionicons } from '@expo/vector-icons';
-import { useLocalSearchParams } from 'expo-router';
+import { Stack, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, Image, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { KeyboardAvoidingView, KeyboardProvider } from 'react-native-keyboard-controller';
 
 export default function About() {
     const params = useLocalSearchParams();
-    const [article, setArticle] = useState<{ author: string, title: string, content: string, publishedat: string, urltoimage: string }>();
+    const [article, setArticle] = useState<{ author: string, title: string, content: string, publishedat: string, urltoimage: string, url: string }>();
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
     const apiUrl = process.env.EXPO_PUBLIC_API_URL;
@@ -56,6 +57,19 @@ export default function About() {
 
     return (
         <>
+            <Stack.Screen
+                options={{
+                    headerRight: () => {
+                        return <View style={{ marginRight: 15 }}>
+                            <Pressable onPress={() => shareArticle(article!.url)}>
+                                <Ionicons name='share-social' size={24}>
+                                </Ionicons>
+                            </Pressable>
+                        </View>
+                    }
+                }
+                }
+            />
             <AnimatedWrapper TOOLTIP_KEY='@PosiNews:FeatureBTooltipSeen'>
                 <PosiBot text={`Finished the read? Let's process the good stuff! Let's chat about your insights below.`}></PosiBot>
             </AnimatedWrapper>
@@ -69,7 +83,7 @@ export default function About() {
                         <View style={styles.container}>
                             <ScrollView keyboardShouldPersistTaps="always">
                                 <Text style={styles.header}>{article.title}</Text>
-                                <Image source={article.urltoimage === "" ? require("@/assets/images/default-article.png") : { uri: article.urltoimage}} style={styles.image} />
+                                <Image source={article.urltoimage === "" ? require("@/assets/images/default-article.png") : { uri: article.urltoimage }} style={styles.image} />
                                 <View style={styles.dateAndAuthor}>
                                     <Text><Ionicons name="calendar" size={16} color="blue" /> {new Date(article.publishedat).toLocaleDateString()}</Text>
                                     <Text style={styles.author}>By {article.author}</Text>

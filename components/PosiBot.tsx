@@ -88,7 +88,7 @@ const styles = StyleSheet.create({
         alignItems: "center",
         flexDirection: "row",
         backgroundColor: 'lightblue',
-        padding: 20,
+        padding: 26,
         justifyContent: "center"
     },
     bubble: {
