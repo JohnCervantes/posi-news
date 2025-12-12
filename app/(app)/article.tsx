@@ -3,8 +3,8 @@ import ChatBox from '@/components/ChatBox';
 import PosiBot from '@/components/PosiBot';
 import shareArticle from '@/components/Share';
 import { Ionicons } from '@expo/vector-icons';
+import Speech from '@mhpdev/react-native-speech';
 import { Stack, useLocalSearchParams } from 'expo-router';
-import * as Speech from 'expo-speech';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { KeyboardAvoidingView, KeyboardProvider } from 'react-native-keyboard-controller';
@@ -21,12 +21,12 @@ export default function About() {
     const posiSpeak = () => {
         setIsSpeaking(true)
         setIsPaused(false)
-        Speech.speak(article!.content, {
+        Speech.speakWithOptions(article!.content, {
             pitch: 1.35,
             rate: 1.10,
             volume: 1.0,
             voice: undefined,
-            onDone: () => setIsSpeaking(false)
+            //onDone: () => setIsSpeaking(false)
         });
     }
 
