@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "rn-prac",
-    "slug": "rn-prac",
+    "name": "Posi News",
+    "slug": "posi-news",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "rnprac",
+    "scheme": "posi-news-main",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
@@ -14,13 +14,11 @@
     "android": {
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
-        "foregroundImage": "./assets/images/android-icon-foreground.png",
-        "backgroundImage": "./assets/images/android-icon-background.png",
-        "monochromeImage": "./assets/images/android-icon-monochrome.png"
+        "foregroundImage": "./assets/images/posi-foreground.png"
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
-      "package": "com.gooofyx.rnprac"
+      "package": "com.badseal.posinews"
     },
     "web": {
       "output": "static",
@@ -39,18 +37,24 @@
             "backgroundColor": "#ADD8E6"
           }
         }
+      ],
+      [
+        "react-native-google-mobile-ads",
+        {
+          "androidAppId": "ca-app-pub-1272636370557269~8206174876"
+        }
       ]
     ],
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
     },
+    "owner": "gooofyx",
     "extra": {
       "router": {},
       "eas": {
-        "projectId": "e20b7bcc-1331-40d8-9f15-b87cd46963e5"
+        "projectId": "8fb5c659-1af2-4a22-b63f-e00bf0c3d0ba"
       }
-    },
-    "owner": "gooofyx"
+    }
   }
 }

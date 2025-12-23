@@ -1,10 +1,11 @@
 import AnimatedWrapper from '@/components/AnimatedWrapper';
 import PosiBot from '@/components/PosiBot';
 import { Ionicons } from '@expo/vector-icons';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { ActivityIndicator, FlatList, Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import { BannerAd, BannerAdSize, TestIds } from 'react-native-google-mobile-ads';
+const adUnitId = __DEV__ ? TestIds.ADAPTIVE_BANNER : 'ca-app-pub-your-real-id';
 
 export default function Index() {
   const router = useRouter();
@@ -14,7 +15,7 @@ export default function Index() {
   const apiUrl = process.env.EXPO_PUBLIC_API_URL as string;
 
   useEffect(() => {
-    AsyncStorage.clear();
+    // AsyncStorage.clear();
     const fetchArticles = async () => {
       try {
         const response = await fetch(apiUrl);
@@ -71,6 +72,10 @@ export default function Index() {
 
   return (
     <>
+      <BannerAd
+        unitId={adUnitId}
+        size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
+      />
       <AnimatedWrapper TOOLTIP_KEY='@PosiNews:FeatureATooltipSeen'>
         <PosiBot text={`Hi, I'm Posibot.\nI'm here to deliver some uplifting news to you!\nClick on a story to see the full content.`}></PosiBot>
       </AnimatedWrapper>

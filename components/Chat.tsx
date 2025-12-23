@@ -21,7 +21,6 @@ const Chat = ({ role, content, url, index, setIsDisabled }: { role: string, cont
                         // Assuming your backend sends the streaming text under a 'content' key
                         if (data.content) {
                             fullResponse += data.content;
-                            console.log(fullResponse);
                             setAiText(fullResponse); // Update the UI
                         }
                     } catch (e) {
