@@ -1,5 +1,5 @@
 import { supabase } from '@/lib/supabase';
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Alert, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
 export default function OTPAuth() {
@@ -7,19 +7,34 @@ export default function OTPAuth() {
     const [token, setToken] = useState('');
     const [step, setStep] = useState<'request' | 'verify'>('request');
 
+    const inputRef = useRef<TextInput>(null);
+    const codeDigitsArray = new Array(6).fill(0);
+
+    useEffect(() => {
+        return () => {
+            setToken('');
+        }
+    }, [])
+
+    const handlePress = () => {
+        inputRef.current?.focus();
+    };
+
+    const handleChangeText = (text: string) => {
+        setToken(text);
+    };
+
     async function verifyOTP(token: string) {
         const { data: { session }, error } = await supabase.auth.verifyOtp({
             email: email,
             token: token,
-            type: 'email', // Use 'email' for OTP codes
+            type: 'email',
         });
 
         if (error) {
             Alert.alert("Invalid Code", error.message);
         } else if (session) {
-            // SUCCESS! 
-            // Your root layout listener will see the session and 
-            // automatically run router.replace('/(app)')
+
         }
     }
 
@@ -27,20 +42,19 @@ export default function OTPAuth() {
         const { error } = await supabase.auth.signInWithOtp({
             email: email,
             options: {
-                // This tells Supabase NOT to expect a deep link redirect
                 shouldCreateUser: true,
             },
         });
 
         if (!error) {
-            setStep('verify'); // Move to the screen where they type the code
+            setStep('verify');
         } else {
             Alert.alert("Error", error.message);
         }
     }
 
     return (
-        <View style={styles.container}>
+        <View style={{ flex: 1, justifyContent: 'center', padding: 16 }}>
             {step === 'request' ? (
                 <>
                     <Text style={styles.title}>Welcome Back</Text>
@@ -74,15 +88,33 @@ export default function OTPAuth() {
                             <Text style={styles.linkText}> Edit</Text>
                         </Pressable>
                     </View>
-                    <TextInput
-                        placeholder="000000"
-                        value={token}
-                        onChangeText={setToken}
-                        keyboardType="number-pad"
-                        style={styles.input}
-                        placeholderTextColor={'gray'}
-                        maxLength={6}
-                    />
+                    <View style={styles.container}>
+                        <Pressable style={styles.inputsContainer} onPress={handlePress}>
+                            {codeDigitsArray.map((_, index) => {
+                                const char = token[index] || '';
+                                const isFocused = token.length === index;
+
+                                return (
+                                    <View
+                                        key={index}
+                                        style={[styles.inputBox, isFocused && styles.inputBoxFocused]}
+                                    >
+                                        <Text style={styles.inputText}>{char}</Text>
+                                    </View>
+                                );
+                            })}
+                        </Pressable>
+
+                        <TextInput
+                            ref={inputRef}
+                            value={token}
+                            onChangeText={handleChangeText}
+                            maxLength={6}
+                            keyboardType="number-pad"
+                            textContentType="oneTimeCode" // Enables iOS "Auto-fill from SMS"
+                            style={styles.hiddenInput}
+                        />
+                    </View>
                     <Pressable style={({ pressed }) => [
                         styles.button,
                         {
@@ -101,7 +133,7 @@ export default function OTPAuth() {
 
 
 const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: '#fff', justifyContent: 'center', padding: 16 },
+    container: { height: 60, position: 'relative', justifyContent: "center", padding: 16, marginBottom: 16 },
     scrollContainer: { flexGrow: 1, justifyContent: 'center', padding: 20 },
     header: { marginBottom: 30 },
     title: {
@@ -137,4 +169,31 @@ const styles = StyleSheet.create({
         marginTop: 30,
     },
     linkText: { color: '#007AFF', fontWeight: 'bold' },
+    inputsContainer: {
+        width: '100%',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+    },
+    inputBox: {
+        width: 45,
+        height: 50,
+        borderWidth: 2,
+        borderColor: '#b3b3b3ff',
+        borderRadius: 8,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#F6F6F6',
+    },
+    inputBoxFocused: {
+        borderColor: '#007AFF', // Highlight color when typing
+    },
+    inputText: {
+        fontSize: 24,
+        fontWeight: 'bold',
+    },
+    hiddenInput: {
+        ...StyleSheet.absoluteFillObject, // Stretch to fill the whole container
+        opacity: 0.01, // Some OS versions ignore 0 opacity, 0.01 is safer
+        zIndex: 1,
+    },
 });

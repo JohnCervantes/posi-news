@@ -6,6 +6,7 @@ import { Stack } from "expo-router";
 import { useEffect, useState } from "react";
 
 export default function RootLayout() {
+   
    const [user, setUser] = useState<User | null>(null);
    useEffect(() => {
       async function getUser() {
@@ -18,7 +19,7 @@ export default function RootLayout() {
    return <Stack >
       <Stack.Screen name="index" options={{
          title: 'Posi News', headerRight: () => user ? <HeaderLogoutButton /> : <HeaderLoginButton />,
-         headerLeft: () => null, 
+         headerLeft: () => null,
          headerBackVisible: false,
          gestureEnabled: false,
       }} />

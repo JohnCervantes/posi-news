@@ -1,9 +1,11 @@
 import AnimatedWrapper from '@/components/AnimatedWrapper';
 import PosiBot from '@/components/PosiBot';
+import { NewsFeedLoading } from '@/components/Skeleton';
 import { Ionicons } from '@expo/vector-icons';
+import { Image } from 'expo-image';
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { ActivityIndicator, FlatList, Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import { BannerAd, BannerAdSize, TestIds } from 'react-native-google-mobile-ads';
 const adUnitId = __DEV__ ? TestIds.ADAPTIVE_BANNER : 'ca-app-pub-your-real-id';
 
@@ -15,7 +17,7 @@ export default function Index() {
   const apiUrl = process.env.EXPO_PUBLIC_API_URL as string;
 
   useEffect(() => {
-    // AsyncStorage.clear();
+    //AsyncStorage.clear();
     const fetchArticles = async () => {
       try {
         const response = await fetch(apiUrl);
@@ -38,15 +40,6 @@ export default function Index() {
     fetchArticles();
   }, []);
 
-  if (isLoading) {
-
-    return (
-      <View style={styles.center}>
-        <ActivityIndicator size="large" color="#0000ff" />
-        <Text>Loading articles...</Text>
-      </View>
-    );
-  }
 
   if (error) {
     return (
@@ -64,7 +57,7 @@ export default function Index() {
       <Text style={styles.nameText}><Ionicons name="calendar" size={16} color="blue" /> {new Date(item.publishedat).toLocaleDateString()}</Text>
       <Text style={styles.title}>{item.title}</Text>
 
-      <Image source={item.urltoimage === "" ? require("@/assets/images/default-article.png") : { uri: item.urltoimage }} style={styles.image} />
+      <Image source={item.urltoimage === "" ? require("@/assets/images/default-article.png") : { uri: item.urltoimage }} style={styles.image} transition={1000} contentFit='cover' placeholder={{ blurhash: "|fF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[" }} />
       <Text style={styles.nameText}>{item.description}</Text>
       <Text style={styles.author}>By {item.author}</Text>
     </Pressable>
@@ -81,11 +74,11 @@ export default function Index() {
       </AnimatedWrapper>
       <View style={styles.container}>
         <Text style={styles.header}>Uplifting Stories</Text>
-        <FlatList
+        {isLoading ? <><NewsFeedLoading /><NewsFeedLoading /><NewsFeedLoading /></> : <FlatList
           data={articles}
           renderItem={renderItem}
           keyExtractor={item => item.article_id.toString()}
-        />
+        />}
       </View></>
 
   );

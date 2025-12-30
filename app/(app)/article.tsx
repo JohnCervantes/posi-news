@@ -2,13 +2,15 @@ import AnimatedWrapper from '@/components/AnimatedWrapper';
 import ChatBox from '@/components/ChatBox';
 import PosiBot from '@/components/PosiBot';
 import shareArticle from '@/components/Share';
+import Spinner from '@/components/Spinner';
 import { supabase } from '@/lib/supabase';
 import { Ionicons } from '@expo/vector-icons';
 import Speech from '@mhpdev/react-native-speech';
 import { User } from '@supabase/supabase-js';
+import { Image } from 'expo-image';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { BannerAd, BannerAdSize, TestIds } from 'react-native-google-mobile-ads';
 import { KeyboardAvoidingView, KeyboardProvider } from 'react-native-keyboard-controller';
 const adUnitId = __DEV__ ? TestIds.ADAPTIVE_BANNER : 'ca-app-pub-your-real-id';
@@ -93,10 +95,7 @@ export default function About() {
 
     if (isLoading) {
         return (
-            <View style={styles.center}>
-                <ActivityIndicator size="large" color="#0000ff" />
-                <Text>Loading articles...</Text>
-            </View>
+            <Spinner text="Loading article..." />
         );
     }
 
@@ -139,7 +138,7 @@ export default function About() {
                         <View style={styles.container}>
                             <ScrollView keyboardShouldPersistTaps="always">
                                 <Text style={styles.header}>{article.title}</Text>
-                                <Image source={article.urltoimage === "" ? require("@/assets/images/default-article.png") : { uri: article.urltoimage }} style={styles.image} />
+                                <Image source={article.urltoimage === "" ? require("@/assets/images/default-article.png") : { uri: article.urltoimage }} style={styles.image} transition={1000} contentFit='cover' placeholder={{ blurhash: "|fF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[" }} />
                                 {!isSpeaking && !isPaused && <Pressable onPress={() => posiSpeak()}>
                                     <View style={styles.speech}>
                                         <Ionicons name='volume-medium' size={24} color={'#4343dcff'} />
@@ -167,7 +166,7 @@ export default function About() {
                                 <Text style={styles.content}>
                                     {article.content}
                                 </Text>
-                                {user && user.id ?
+                                {user ?
                                     <ChatBox article_id={params.article_id}></ChatBox> :
                                     <View style={{ alignSelf: 'center', marginVertical: 8, padding: 8, justifyContent: 'center', alignItems: 'center', borderRadius: 8, borderWidth: 0.5 }}>
                                         <Ionicons style={{ marginVertical: 16 }} name="lock-closed" size={32}></Ionicons>
