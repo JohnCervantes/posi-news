@@ -19,12 +19,12 @@ export default function About() {
     const params = useLocalSearchParams();
     const [article, setArticle] = useState<{ author: string, title: string, content: string, publishedat: string, urltoimage: string, url: string }>();
     const [isLoading, setIsLoading] = useState<boolean>(true);
-    const [error, setError] = useState<string | null>(null);
+    const [error, setError] = useState<string | undefined>(undefined);
     const apiUrl = process.env.EXPO_PUBLIC_API_URL;
     const [isSpeaking, setIsSpeaking] = useState<boolean>(false);
     const [isPaused, setIsPaused] = useState<boolean>(false);
     const router = useRouter();
-    const [user, setUser] = useState<User | null>(null);
+    const [user, setUser] = useState<User | undefined>(undefined);
 
     const posiSpeak = () => {
         setIsSpeaking(true)
@@ -59,7 +59,8 @@ export default function About() {
     useEffect(() => {
         async function getUser() {
             const { data: { user } } = await supabase.auth.getUser();
-            setUser(user);
+            if (user)
+                setUser(user);
         }
         getUser();
     }, []);
@@ -75,7 +76,7 @@ export default function About() {
 
                 const data = await response.json();
                 setArticle(data);
-                setError(null);
+                setError(undefined);
             } catch (e) {
                 console.error("Fetching error: ", e);
                 setError('Failed to load data. Please check your connection.');
@@ -161,7 +162,7 @@ export default function About() {
                                     </Pressable>}
                                 <View style={styles.dateAndAuthor}>
                                     <Text><Ionicons name="calendar" size={16} color="blue" /> {new Date(article.publishedat).toLocaleDateString()}</Text>
-                                    <Text style={styles.author}>By {article.author}</Text>
+                                    <Text style={styles.author}>{!article.author ? "Anonymous" : article.author}</Text>
                                 </View>
                                 <Text style={styles.content}>
                                     {article.content}
@@ -171,7 +172,7 @@ export default function About() {
                                     <View style={{ alignSelf: 'center', marginVertical: 8, padding: 8, justifyContent: 'center', alignItems: 'center', borderRadius: 8, borderWidth: 0.5 }}>
                                         <Ionicons style={{ marginVertical: 16 }} name="lock-closed" size={32}></Ionicons>
                                         <Text style={styles.header}>Join the conversation</Text>
-                                        <Text style={styles.content}>This AI chat feature is only available to logged-in users.</Text>
+                                        <Text style={[styles.content, { textAlign: 'center' }]}>This AI chat feature is only available to logged-in users.</Text>
                                         <View style={{ flexDirection: "row", justifyContent: 'center', margin: 16 }}>
                                             <Pressable onPress={() => { router.push('/login') }} style={{ padding: 16, backgroundColor: "#0000ff", borderRadius: 8, borderWidth: 1, marginRight: 8 }}><Text style={{ color: 'white', fontWeight: 'bold' }}>Log in</Text></Pressable>
                                         </View>

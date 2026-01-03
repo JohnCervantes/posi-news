@@ -2,14 +2,44 @@ import { supabase } from "@/lib/supabase";
 import { Session } from "@supabase/supabase-js";
 import { Stack, useRouter, useSegments } from "expo-router";
 import { useEffect, useState } from "react";
-import mobileAds from 'react-native-google-mobile-ads';
+import MobileAds, { AdsConsent, AdsConsentDebugGeography } from 'react-native-google-mobile-ads';
 
 export default function RootLayout() {
-  mobileAds().initialize();
+  //mobileAds().initialize();
   const router = useRouter();
   const segments = useSegments();
   const [session, setSession] = useState<Session | null>(null);
   const [initialized, setInitialized] = useState(false);
+  const [isReady, setIsReady] = useState(false);
+
+  useEffect(() => {
+    const initializeApp = async () => {
+      try {
+        await AdsConsent.reset();
+
+        //const consentInfo = await AdsConsent.requestInfoUpdate();
+
+        //debuging purposes
+        const consentInfo = await AdsConsent.requestInfoUpdate({
+          debugGeography: AdsConsentDebugGeography.EEA,
+          testDeviceIdentifiers: [process.env.EXPO_PUBLIC_DEVICE_ID as string],
+        });
+        //&& consentInfo.status === AdsConsentStatus.REQUIRED
+        if (consentInfo.isConsentFormAvailable) {
+          await AdsConsent.loadAndShowConsentFormIfRequired();
+        }
+
+        await MobileAds().initialize();
+
+        setIsReady(true);
+      } catch (error) {
+        console.error("Initialization error:", error);
+        setIsReady(true);
+      }
+    };
+
+    initializeApp();
+  }, []);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -35,6 +65,8 @@ export default function RootLayout() {
       router.replace('/');
     }
   }, [session, initialized, segments]);
+
+  if (!isReady) return null;
 
   return (<Stack>
     <Stack.Screen name="(app)" options={{

@@ -41,9 +41,12 @@
       [
         "react-native-google-mobile-ads",
         {
-          "androidAppId": "ca-app-pub-1272636370557269~8206174876"
+          "androidAppId": "ca-app-pub-1272636370557269~8206174876",
+          "user_messaging_platform_permission": true
         }
-      ]
+      ],
+      "expo-web-browser",
+      "expo-mail-composer"
     ],
     "experiments": {
       "typedRoutes": true,

@@ -59,7 +59,7 @@ export default function Index() {
 
       <Image source={item.urltoimage === "" ? require("@/assets/images/default-article.png") : { uri: item.urltoimage }} style={styles.image} transition={1000} contentFit='cover' placeholder={{ blurhash: "|fF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[" }} />
       <Text style={styles.nameText}>{item.description}</Text>
-      <Text style={styles.author}>By {item.author}</Text>
+      <Text style={styles.author}>By {!item.author ? "Anonymous" : item.author}</Text>
     </Pressable>
   );
 
