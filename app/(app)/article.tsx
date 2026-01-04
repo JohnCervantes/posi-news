@@ -17,7 +17,7 @@ const adUnitId = __DEV__ ? TestIds.ADAPTIVE_BANNER : 'ca-app-pub-your-real-id';
 
 export default function About() {
     const params = useLocalSearchParams();
-    const [article, setArticle] = useState<{ author: string, title: string, content: string, publishedat: string, urltoimage: string, url: string }>();
+    const [article, setArticle] = useState<{ creator: string, title: string, content: string, publishedat: string, image_url: string, url: string, country: string }>();
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | undefined>(undefined);
     const apiUrl = process.env.EXPO_PUBLIC_API_URL;
@@ -139,7 +139,7 @@ export default function About() {
                         <View style={styles.container}>
                             <ScrollView keyboardShouldPersistTaps="always">
                                 <Text style={styles.header}>{article.title}</Text>
-                                <Image source={article.urltoimage === "" ? require("@/assets/images/default-article.png") : { uri: article.urltoimage }} style={styles.image} transition={1000} contentFit='cover' placeholder={{ blurhash: "|fF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[" }} />
+                                <Image source={article.image_url === "" ? require("@/assets/images/default-article.png") : { uri: article.image_url }} style={styles.image} transition={1000} contentFit='cover' placeholder={{ blurhash: "|fF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[" }} />
                                 {!isSpeaking && !isPaused && <Pressable onPress={() => posiSpeak()}>
                                     <View style={styles.speech}>
                                         <Ionicons name='volume-medium' size={24} color={'#4343dcff'} />
@@ -162,7 +162,7 @@ export default function About() {
                                     </Pressable>}
                                 <View style={styles.dateAndAuthor}>
                                     <Text><Ionicons name="calendar" size={16} color="blue" /> {new Date(article.publishedat).toLocaleDateString()}</Text>
-                                    <Text style={styles.author}>{!article.author ? "Anonymous" : article.author}</Text>
+                                    <Text style={styles.author}>{!article.creator ? "Anonymous" : article.creator}</Text>
                                 </View>
                                 <Text style={styles.content}>
                                     {article.content}

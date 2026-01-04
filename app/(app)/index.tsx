@@ -4,17 +4,25 @@ import { NewsFeedLoading } from '@/components/Skeleton';
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { useRouter } from "expo-router";
-import { useEffect, useState } from "react";
-import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
+import { useEffect, useMemo, useState } from "react";
+import { FlatList, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { BannerAd, BannerAdSize, TestIds } from 'react-native-google-mobile-ads';
 const adUnitId = __DEV__ ? TestIds.ADAPTIVE_BANNER : 'ca-app-pub-your-real-id';
 
+type ArticleType = { article_id: number; creator: string, country: string, title: string, description: string, url: string, image_url: string, label: string, score: string, publishedat: string, category: string[] }
+
 export default function Index() {
   const router = useRouter();
-  const [articles, setArticles] = useState([]);
+  const [articles, setArticles] = useState<ArticleType[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const apiUrl = process.env.EXPO_PUBLIC_API_URL as string;
+  const [category, setCategory] = useState('all');
+  const [activeCategory, setActiveCategory] = useState('all');
+
+  const filteredArticles = useMemo(() => {
+    return articles.filter((article) => article.category.includes(category))
+  }, [category])
 
   useEffect(() => {
     //AsyncStorage.clear();
@@ -49,7 +57,7 @@ export default function Index() {
     );
   }
 
-  const renderItem = ({ item }: { item: { article_id: number; author: string, title: string, description: string, url: string, urltoimage: string, label: string, score: string, publishedat: string } }) => (
+  const renderItem = ({ item }: { item: ArticleType }) => (
     <Pressable onPress={() => { router.navigate({ pathname: "/article", params: { article_id: item.article_id } }) }} style={({ pressed }) => [
       styles.listItem,
       pressed && styles.itemPressed
@@ -57,9 +65,9 @@ export default function Index() {
       <Text style={styles.nameText}><Ionicons name="calendar" size={16} color="blue" /> {new Date(item.publishedat).toLocaleDateString()}</Text>
       <Text style={styles.title}>{item.title}</Text>
 
-      <Image source={item.urltoimage === "" ? require("@/assets/images/default-article.png") : { uri: item.urltoimage }} style={styles.image} transition={1000} contentFit='cover' placeholder={{ blurhash: "|fF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[" }} />
-      <Text style={styles.nameText}>{item.description}</Text>
-      <Text style={styles.author}>By {!item.author ? "Anonymous" : item.author}</Text>
+      <Image source={item.image_url === "" ? require("@/assets/images/default-article.png") : { uri: item.image_url }} style={styles.image} transition={1000} contentFit='cover' placeholder={{ blurhash: "|fF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[" }} />
+      <Text numberOfLines={5} ellipsizeMode='tail' style={styles.nameText}>{item.description}</Text>
+      <Text style={styles.author}>{item.creator && `By ${item.creator}`}</Text>
     </Pressable>
   );
 
@@ -72,14 +80,28 @@ export default function Index() {
       <AnimatedWrapper TOOLTIP_KEY='@PosiNews:FeatureATooltipSeen'>
         <PosiBot text={`Hi, I'm Posibot.\nI'm here to deliver some uplifting news to you!\nClick on a story to see the full content.`}></PosiBot>
       </AnimatedWrapper>
-      <View style={styles.container}>
+      <View style={[styles.container]}>
         <Text style={styles.header}>Uplifting Stories</Text>
-        {isLoading ? <><NewsFeedLoading /><NewsFeedLoading /><NewsFeedLoading /></> : <FlatList
-          data={articles}
-          renderItem={renderItem}
-          keyExtractor={item => item.article_id.toString()}
-        />}
-      </View></>
+        <ScrollView horizontal={true} contentContainerStyle={{ paddingHorizontal: 16, marginBottom: 16, justifyContent: 'center', alignItems: "center", columnGap: 8, height: 60 }}>
+
+          {["all", "business", "health", "science", "technology", "environment"].map((category) => {
+            return <Pressable key={category} style={({ pressed }) => [styles.button, {
+              backgroundColor: activeCategory === category ? "darkblue" : "gray",
+              opacity: pressed ? 0.5 : 1
+            }]}
+              onPress={() => { setCategory(category); setActiveCategory(category) }}><Text style={styles.buttonText}>{category}</Text></Pressable>
+          })}
+
+        </ScrollView>
+
+
+        {isLoading ? <View><NewsFeedLoading /><NewsFeedLoading /><NewsFeedLoading /></View> :
+          <FlatList
+            data={category === 'all' ? articles : filteredArticles}
+            renderItem={renderItem}
+            keyExtractor={item => item.article_id.toString()}
+          />}
+      </View ></>
 
   );
 };
@@ -89,6 +111,13 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingTop: 20,
     backgroundColor: '#f5f5f5',
+  },
+  button: {
+    paddingVertical: 8, paddingHorizontal: 16, borderWidth: 0.8, borderColor: "lightgray", borderRadius: 8
+  },
+  buttonText: {
+    fontSize: 16,
+    color: 'white'
   },
   center: {
     flex: 1,
@@ -106,7 +135,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     textAlign: 'center',
-    marginBottom: 20,
+    marginBottom: 8,
     color: '#333333'
   },
   listItem: {
