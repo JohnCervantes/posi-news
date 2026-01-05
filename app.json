@@ -41,8 +41,7 @@
       [
         "react-native-google-mobile-ads",
         {
-          "androidAppId": "ca-app-pub-1272636370557269~8206174876",
-          "user_messaging_platform_permission": true
+          "androidAppId": "ca-app-pub-1272636370557269~8206174876"
         }
       ],
       "expo-web-browser",

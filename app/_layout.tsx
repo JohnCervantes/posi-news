@@ -2,7 +2,7 @@ import { supabase } from "@/lib/supabase";
 import { Session } from "@supabase/supabase-js";
 import { Stack, useRouter, useSegments } from "expo-router";
 import { useEffect, useState } from "react";
-import MobileAds, { AdsConsent, AdsConsentDebugGeography } from 'react-native-google-mobile-ads';
+import MobileAds, { AdsConsent, AdsConsentStatus } from 'react-native-google-mobile-ads';
 
 export default function RootLayout() {
   //mobileAds().initialize();
@@ -15,17 +15,16 @@ export default function RootLayout() {
   useEffect(() => {
     const initializeApp = async () => {
       try {
-        await AdsConsent.reset();
-
-        //const consentInfo = await AdsConsent.requestInfoUpdate();
+        const consentInfo = await AdsConsent.requestInfoUpdate();
 
         //debuging purposes
-        const consentInfo = await AdsConsent.requestInfoUpdate({
-          debugGeography: AdsConsentDebugGeography.EEA,
-          testDeviceIdentifiers: [process.env.EXPO_PUBLIC_DEVICE_ID as string],
-        });
-        //&& consentInfo.status === AdsConsentStatus.REQUIRED
-        if (consentInfo.isConsentFormAvailable) {
+        // await AdsConsent.reset();
+        // const consentInfo = await AdsConsent.requestInfoUpdate({
+        //   debugGeography: AdsConsentDebugGeography.EEA,
+        //   testDeviceIdentifiers: [process.env.EXPO_PUBLIC_DEVICE_ID as string],
+        // });
+
+        if (consentInfo.isConsentFormAvailable && consentInfo.status === AdsConsentStatus.REQUIRED) {
           await AdsConsent.loadAndShowConsentFormIfRequired();
         }
 

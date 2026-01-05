@@ -13,7 +13,7 @@ import { useEffect, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { BannerAd, BannerAdSize, TestIds } from 'react-native-google-mobile-ads';
 import { KeyboardAvoidingView, KeyboardProvider } from 'react-native-keyboard-controller';
-const adUnitId = __DEV__ ? TestIds.ADAPTIVE_BANNER : 'ca-app-pub-your-real-id';
+const adUnitId = __DEV__ ? TestIds.ADAPTIVE_BANNER : 'ca-app-pub-1272636370557269/6655900426';
 
 export default function About() {
     const params = useLocalSearchParams();

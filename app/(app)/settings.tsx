@@ -9,6 +9,7 @@ import { useRouter } from "expo-router";
 import * as WebBrowser from 'expo-web-browser';
 import { useEffect, useState } from "react";
 import { Alert, Pressable, StyleSheet, Text, View } from "react-native";
+import { AdsConsent } from "react-native-google-mobile-ads";
 
 const Settings = () => {
     const [user, setUser] = useState<User | undefined>();
@@ -18,6 +19,16 @@ const Settings = () => {
     const openRawGist = async (file: string) => {
         const url = file === "privacy" ? "https://gist.github.com/JohnCervantes/6a098645d13c5dcfcb9a250d2f42af70#file-posi-news-privacy-policy-md" : 'https://gist.github.com/JohnCervantes/6a098645d13c5dcfcb9a250d2f42af70#file-posi-news-terms-of-service-md'
         await WebBrowser.openBrowserAsync(url);
+    };
+
+    const handleAdPreferences = async () => {
+        try {
+            await AdsConsent.requestInfoUpdate();
+            await AdsConsent.showPrivacyOptionsForm();
+        } catch (e: unknown) {
+            if (e instanceof Error)
+                Alert.alert("Privacy form failed to open:", e.message);
+        }
     };
 
     const handleDeleteAccount = async () => {
@@ -86,7 +97,7 @@ const Settings = () => {
                     <Text style={styles.settingText}>Privacy Policy</Text>
                 </View>
 
-                <Ionicons name="chevron-forward" size={28}></Ionicons>
+                <Ionicons name="chevron-forward" size={28} color={"gray"}></Ionicons>
             </Pressable>
 
             <Pressable onPress={() => openRawGist("terms")} style={({ pressed }) => [styles.setting, {
@@ -97,9 +108,9 @@ const Settings = () => {
                     <Text style={styles.settingText}>Terms Of Service</Text>
                 </View>
 
-                <Ionicons name="chevron-forward" size={28}></Ionicons>
+                <Ionicons name="chevron-forward" size={28} color={"gray"}></Ionicons>
             </Pressable>
-            <Pressable style={({ pressed }) => [styles.setting, {
+            <Pressable onPress={handleAdPreferences} style={({ pressed }) => [styles.setting, {
                 opacity: pressed ? 0.5 : 1
             }]}>
                 <View style={{ flexDirection: "row", columnGap: 16 }}>
@@ -107,7 +118,7 @@ const Settings = () => {
                     <Text style={styles.settingText}>Ad Preferences</Text>
                 </View>
 
-                <Ionicons name="chevron-forward" size={28}></Ionicons>
+                <Ionicons name="chevron-forward" size={28} color={"gray"}></Ionicons>
             </Pressable>
             <Pressable onPress={handleSupportPress} style={({ pressed }) => [styles.setting, {
                 opacity: pressed ? 0.5 : 1
@@ -117,7 +128,7 @@ const Settings = () => {
                     <Text style={styles.settingText}>Help & Support</Text>
                 </View>
 
-                <Ionicons name="chevron-forward" size={28}></Ionicons>
+                <Ionicons name="chevron-forward" size={28} color={"gray"}></Ionicons>
             </Pressable>
         </View>
 
@@ -181,7 +192,7 @@ const styles = StyleSheet.create({
         borderRadius: 8,
     },
     setting: {
-        flexDirection: "row", justifyContent: "space-between", padding: 24, borderBottomWidth: 0.2, borderColor: "lightgray"
+        flexDirection: "row", justifyContent: "space-between", padding: 16, borderBottomWidth: 0.2, borderColor: "lightgray"
     },
     settingText: {
         fontSize: 16

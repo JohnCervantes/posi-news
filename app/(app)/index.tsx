@@ -7,7 +7,7 @@ import { useRouter } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
 import { FlatList, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { BannerAd, BannerAdSize, TestIds } from 'react-native-google-mobile-ads';
-const adUnitId = __DEV__ ? TestIds.ADAPTIVE_BANNER : 'ca-app-pub-your-real-id';
+const adUnitId = __DEV__ ? TestIds.ADAPTIVE_BANNER : 'ca-app-pub-1272636370557269/6655900426';
 
 type ArticleType = { article_id: number; creator: string, country: string, title: string, description: string, url: string, image_url: string, label: string, score: string, publishedat: string, category: string[] }
 
@@ -67,7 +67,10 @@ export default function Index() {
 
       <Image source={item.image_url === "" ? require("@/assets/images/default-article.png") : { uri: item.image_url }} style={styles.image} transition={1000} contentFit='cover' placeholder={{ blurhash: "|fF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[" }} />
       <Text numberOfLines={5} ellipsizeMode='tail' style={styles.nameText}>{item.description}</Text>
-      <Text style={styles.author}>{item.creator && `By ${item.creator}`}</Text>
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+        <View style={[styles.button, { paddingVertical: 4, paddingHorizontal: 8 }]}><Text>{item.country[0].toUpperCase() + item.country.substring(1)}</Text></View>
+        <Text style={styles.author}>{item.creator && `By ${item.creator}`}</Text>
+      </View>
     </Pressable>
   );
 
@@ -82,7 +85,7 @@ export default function Index() {
       </AnimatedWrapper>
       <View style={[styles.container]}>
         <Text style={styles.header}>Uplifting Stories</Text>
-        <ScrollView horizontal={true} contentContainerStyle={{ paddingHorizontal: 16, marginBottom: 16, justifyContent: 'center', alignItems: "center", columnGap: 8, height: 60 }}>
+        <ScrollView horizontal={true} contentContainerStyle={{ paddingHorizontal: 16, marginBottom: 16, alignItems: 'baseline', columnGap: 8, minHeight: 60 }}>
 
           {["all", "business", "health", "science", "technology", "environment"].map((category) => {
             return <Pressable key={category} style={({ pressed }) => [styles.button, {
@@ -95,7 +98,7 @@ export default function Index() {
         </ScrollView>
 
 
-        {isLoading ? <View><NewsFeedLoading /><NewsFeedLoading /><NewsFeedLoading /></View> :
+        {isLoading ? <View style={{ marginTop: 60 }}><NewsFeedLoading /><NewsFeedLoading /><NewsFeedLoading /></View> :
           <FlatList
             data={category === 'all' ? articles : filteredArticles}
             renderItem={renderItem}
