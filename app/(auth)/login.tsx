@@ -1,6 +1,6 @@
 import { supabase } from '@/lib/supabase';
 import React, { useEffect, useRef, useState } from 'react';
-import { Alert, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Alert, KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
 export default function OTPAuth() {
     const [email, setEmail] = useState('');
@@ -54,77 +54,91 @@ export default function OTPAuth() {
     }
 
     return (
-        <View style={{ flex: 1, justifyContent: 'center', padding: 16 }}>
+        <View style={{ flex: 1, }}>
             {step === 'request' ? (
-                <>
-                    <Text style={styles.title}>Welcome Back</Text>
-                    <Text style={styles.subtitle}>Unlock AI Chat & personalized news. Enter your email to receive a one-time secure code.</Text>
-                    <Text style={styles.label}>Email</Text>
-                    <TextInput
-                        placeholder="Email Address"
-                        value={email}
-                        onChangeText={setEmail}
-                        style={styles.input}
-                        placeholderTextColor={'gray'}
-                    />
-                    <Pressable style={({ pressed }) => [
-                        styles.button,
-                        {
-                            transform: [{ scale: pressed ? 0.98 : 1 }],
-                            opacity: pressed ? 0.5 : 1
-                        },
-                    ]} onPress={sendOTP}>
-                        <Text style={styles.buttonText}>Send OTP</Text>
-                    </Pressable>
-                </>
-            ) : (
-                <>
-                    <Text style={styles.title}>Enter the 6-digit code</Text>
-                    <Text style={styles.subtitle}>{`We've send a 6-digit code to`} </Text>
-                    <View style={{ flexDirection: 'row', marginBottom: 16 }}>
-                        <Text style={styles.label}>{email}
-                        </Text>
-                        <Pressable onPress={() => setStep('request')}>
-                            <Text style={styles.linkText}> Edit</Text>
-                        </Pressable>
-                    </View>
-                    <View style={styles.container}>
-                        <Pressable style={styles.inputsContainer} onPress={handlePress}>
-                            {codeDigitsArray.map((_, index) => {
-                                const char = token[index] || '';
-                                const isFocused = token.length === index;
+                <KeyboardAvoidingView
+                    behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                    keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
+                    style={{ flex: 1 }}
 
-                                return (
-                                    <View
-                                        key={index}
-                                        style={[styles.inputBox, isFocused && styles.inputBoxFocused]}
-                                    >
-                                        <Text style={styles.inputText}>{char}</Text>
-                                    </View>
-                                );
-                            })}
-                        </Pressable>
-
+                >
+                    <View style={{ flex: 1, justifyContent: 'center', padding: 16 }}>
+                        <Text style={styles.title}>Welcome Back</Text>
+                        <Text style={styles.subtitle}>Unlock AI Chat & personalized news. Enter your email to receive a one-time secure code.</Text>
+                        <Text style={styles.label}>Email</Text>
                         <TextInput
-                            ref={inputRef}
-                            value={token}
-                            onChangeText={handleChangeText}
-                            maxLength={6}
-                            keyboardType="number-pad"
-                            textContentType="oneTimeCode" // Enables iOS "Auto-fill from SMS"
-                            style={styles.hiddenInput}
+                            placeholder="Email Address"
+                            value={email}
+                            onChangeText={setEmail}
+                            style={styles.input}
+                            placeholderTextColor={'gray'}
                         />
+                        <Pressable style={({ pressed }) => [
+                            styles.button,
+                            {
+                                transform: [{ scale: pressed ? 0.98 : 1 }],
+                                opacity: pressed ? 0.5 : 1
+                            },
+                        ]} onPress={sendOTP}>
+                            <Text style={styles.buttonText}>Send OTP</Text>
+                        </Pressable>
                     </View>
-                    <Pressable style={({ pressed }) => [
-                        styles.button,
-                        {
-                            transform: [{ scale: pressed ? 0.98 : 1 }],
-                            opacity: pressed ? 0.5 : 1
-                        },
-                    ]} onPress={() => verifyOTP(token)}>
-                        <Text style={styles.buttonText}>Verify & Login</Text>
-                    </Pressable>
-                </>
+                </KeyboardAvoidingView>
+            ) : (
+                <KeyboardAvoidingView
+                    behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                    keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
+                    style={{ flex: 1 }}
+
+                >
+                    <View style={{ flex: 1, justifyContent: 'center', padding: 16 }}>
+                        <Text style={styles.title}>Enter the 6-digit code</Text>
+                        <Text style={styles.subtitle}>{`We've send a 6-digit code to`} </Text>
+                        <View style={{ flexDirection: 'row', marginBottom: 16 }}>
+                            <Text style={styles.label}>{email}
+                            </Text>
+                            <Pressable onPress={() => setStep('request')}>
+                                <Text style={styles.linkText}> Edit</Text>
+                            </Pressable>
+                        </View>
+                        <View style={styles.container}>
+                            <Pressable style={styles.inputsContainer} onPress={handlePress}>
+                                {codeDigitsArray.map((_, index) => {
+                                    const char = token[index] || '';
+                                    const isFocused = token.length === index;
+
+                                    return (
+                                        <View
+                                            key={index}
+                                            style={[styles.inputBox, isFocused && styles.inputBoxFocused]}
+                                        >
+                                            <Text style={styles.inputText}>{char}</Text>
+                                        </View>
+                                    );
+                                })}
+                            </Pressable>
+
+                            <TextInput
+                                ref={inputRef}
+                                value={token}
+                                onChangeText={handleChangeText}
+                                maxLength={6}
+                                keyboardType="number-pad"
+                                textContentType="oneTimeCode" // Enables iOS "Auto-fill from SMS"
+                                style={styles.hiddenInput}
+                            />
+                        </View>
+                        <Pressable style={({ pressed }) => [
+                            styles.button,
+                            {
+                                transform: [{ scale: pressed ? 0.98 : 1 }],
+                                opacity: pressed ? 0.5 : 1
+                            },
+                        ]} onPress={() => verifyOTP(token)}>
+                            <Text style={styles.buttonText}>Verify & Login</Text>
+                        </Pressable>
+                    </View>
+                </KeyboardAvoidingView>
             )
             }
         </View >

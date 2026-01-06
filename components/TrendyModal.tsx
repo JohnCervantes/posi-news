@@ -19,7 +19,7 @@ export default function TrendyModal({ visible, onClose, children }: TrendyModalP
             statusBarTranslucent={true}
         >
             <BlurView
-                intensity={10}
+                intensity={30}
                 style={StyleSheet.absoluteFill}
                 experimentalBlurMethod="dimezisBlurView"
             />

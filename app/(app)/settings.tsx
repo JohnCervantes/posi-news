@@ -165,7 +165,7 @@ const Settings = () => {
         <TrendyModal visible={showModal} onClose={() => { setShowModal(false) }}>
             <Ionicons name="warning-outline" size={40} color={"red"} />
             <Text style={{ fontSize: 16, fontWeight: 700, margin: 16 }}>Delete Account?</Text>
-            <Text style={{ textAlign: "center", fontSize: 16 }}>This action cannot be undone. You will permanently lose ai chat history, and personal preferences.</Text>
+            <Text style={{ textAlign: "center", fontSize: 16, marginBottom: 16 }}>This action cannot be undone. You will permanently lose ai chat history, and personal preferences.</Text>
             <Pressable onPress={handleDeleteAccount}
                 style={({ pressed }) => [{
                     padding: 16, backgroundColor: 'red', borderRadius: 8, marginVertical: 8,

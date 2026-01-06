@@ -6,7 +6,7 @@ import { Pressable, StyleSheet, TextInput, View } from 'react-native';
 
 const ChatBox = ({ article_id }: { article_id: number }) => {
     const [text, setText] = useState('');
-    const [chatList, setChatList] = useState<{ role: string, content: string, url?: string | undefined }[]>([{ role: "assistant", content: "What do you think about this article?" }]);
+    const [chatList, setChatList] = useState<{ role: string, content: string, url?: string | undefined }[]>([]);
     const [isDisabled, setIsDisabled] = useState<boolean>(false);
 
     const handleButtonPress = () => {
@@ -18,6 +18,7 @@ const ChatBox = ({ article_id }: { article_id: number }) => {
 
     return (
         <View style={styles.container}>
+            <Chat role={"init"} content={"What do you think about this article?"} setIsDisabled={setIsDisabled}></Chat>
             {chatList.map((chat, index) => {
                 return (<Chat key={index} role={chat.role} content={chat.content} url={chat.url} index={index} setIsDisabled={setIsDisabled}></Chat>)
             })}
@@ -37,7 +38,7 @@ const ChatBox = ({ article_id }: { article_id: number }) => {
                         (!text.trim() || isDisabled) && styles.buttonDisabled,
                     ]}
                     onPress={handleButtonPress}
-                    // disabled={!text.trim() || isDisabled}
+                // disabled={!text.trim() || isDisabled}
                 ><Ionicons name="send" size={16} color="white" />
                 </Pressable>
             </View>

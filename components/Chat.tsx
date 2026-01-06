@@ -3,22 +3,35 @@ import { Image, StyleSheet, Text, View } from "react-native";
 import EventSource from "react-native-sse";
 import "react-native-url-polyfill/auto";
 
-const Chat = ({ role, content, url, index, setIsDisabled }: { role: string, content: string, url?: string | undefined, index: number, setIsDisabled: React.Dispatch<React.SetStateAction<boolean>> }) => {
-    const [aiText, setAiText] = useState<string>();
-    const defaultAiText = index === 0 ? content : 'thinking...';
+const Chat = ({ role, content, url, index, setIsDisabled }: { role: string, content: string, url?: string | undefined, index?: number, setIsDisabled?: React.Dispatch<React.SetStateAction<boolean>> }) => {
+    const [aiText, setAiText] = useState<string>("thinking...");
+    const safetyBlacklist = [
+        /(ignore|bypass|override|reset|system|forget)\s+(all|previous|instructions|rules|directives)/gi,
+        /(act as|pretend|roleplay|persona|assume the role)\s+(unrestricted|DAN|jailbroken|evil|bot)/gi,
+        /(developer|maintenance|debug|sudo|root|emergency|bypass)\s+(mode|access|override|command)/gi,
+        /(repeat|show|list|output)\s+(your|initial|system|internal)\s+(prompt|instructions|config)/gi
+    ];
+
+    function isSafe(input: string): boolean {
+        return !safetyBlacklist.some(regex => regex.test(input));
+    }
+
     useEffect(() => {
-        if (url) {
-            setIsDisabled(true);
+        if (!isSafe(content)) {
+            setAiText("Your message contains language that triggered our safety filters. Please rephrase your message.");
+            setIsDisabled!(false);
+            return;
+        }
+
+        if (url && isSafe(content)) {
+            setIsDisabled!(true);
             let fullResponse = '';
             const es = new EventSource(url);
 
             es.addEventListener('message', (event: any) => {
                 if (event.data) {
                     try {
-                        // Parse the JSON data sent from the Node.js backend
                         const data = JSON.parse(event.data);
-
-                        // Assuming your backend sends the streaming text under a 'content' key
                         if (data.content) {
                             fullResponse += data.content;
                             setAiText(fullResponse); // Update the UI
@@ -32,18 +45,23 @@ const Chat = ({ role, content, url, index, setIsDisabled }: { role: string, cont
             es.addEventListener('end', () => {
                 console.log('Stream finished.');
                 es.close();
-                setIsDisabled(false);
+                setIsDisabled!(false);
             });
         }
-    }, [url])
+    }, [url, content])
 
-    return (<View style={styles.container}>
-        {role === 'user' && <View style={styles.containerUser}><Text style={styles.text}>{content}</Text>
-        </View>}
-        {role === "assistant" && <View style={styles.containerAi}>
-            <Image style={styles.image} source={require('@/assets/images/posi.png')}></Image>
-            <Text style={styles.textAi}>{aiText || defaultAiText}</Text></View>}
-    </View>)
+    return (
+        <View style={styles.container}>
+            {role === "init" && <View style={styles.containerAi}>
+                <Image style={styles.image} source={require('@/assets/images/posi.png')}></Image>
+                <Text style={styles.textAi}>{content}</Text></View>}
+            {role === 'user' && <View style={styles.containerUser}><Text style={styles.text}>{content}</Text>
+            </View>}
+            {role === "assistant" && <View style={styles.containerAi}>
+                <Image style={styles.image} source={require('@/assets/images/posi.png')}></Image>
+                <Text style={styles.textAi}>{aiText}</Text></View>}
+        </View>
+    )
 }
 
 const styles = StyleSheet.create({

@@ -6,16 +6,17 @@ import Spinner from '@/components/Spinner';
 import { supabase } from '@/lib/supabase';
 import { Ionicons } from '@expo/vector-icons';
 import Speech from '@mhpdev/react-native-speech';
+import { useHeaderHeight } from '@react-navigation/elements';
 import { User } from '@supabase/supabase-js';
 import { Image } from 'expo-image';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { BannerAd, BannerAdSize, TestIds } from 'react-native-google-mobile-ads';
-import { KeyboardAvoidingView, KeyboardProvider } from 'react-native-keyboard-controller';
 const adUnitId = __DEV__ ? TestIds.ADAPTIVE_BANNER : 'ca-app-pub-1272636370557269/6655900426';
 
 export default function About() {
+    const headerHeight = useHeaderHeight();
     const params = useLocalSearchParams();
     const [article, setArticle] = useState<{ creator: string, title: string, content: string, publishedat: string, image_url: string, url: string, country: string }>();
     const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -130,43 +131,46 @@ export default function About() {
                 <PosiBot text={`Finished the read? Let's process the good stuff! Let's chat about your insights below.`}></PosiBot>
             </AnimatedWrapper>
             {article &&
-                <KeyboardProvider>
+                <View style={styles.container}>
                     <KeyboardAvoidingView
-                        behavior="padding" // or "height", "position"
-                        keyboardVerticalOffset={100}
+                        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+
+                        keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : headerHeight}
                         style={{ flex: 1 }}
                     >
-                        <View style={styles.container}>
-                            <ScrollView keyboardShouldPersistTaps="always">
-                                <Text style={styles.header}>{article.title}</Text>
-                                <Image source={article.image_url === "" ? require("@/assets/images/default-article.png") : { uri: article.image_url }} style={styles.image} transition={1000} contentFit='cover' placeholder={{ blurhash: "|fF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[" }} />
-                                {!isSpeaking && !isPaused && <Pressable onPress={() => posiSpeak()}>
+                        <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="always">
+                            <Text style={styles.header}>{article.title}</Text>
+                            <Image source={article.image_url === "" ? require("@/assets/images/default-article.png") : { uri: article.image_url }} style={styles.image} transition={1000} contentFit='cover' placeholder={{ blurhash: "|fF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[" }} />
+                            {!isSpeaking && !isPaused && <Pressable onPress={() => posiSpeak()}>
+                                <View style={styles.speech}>
+                                    <Ionicons name='volume-medium' size={24} color={'#4343dcff'} />
+                                    <Text style={styles.speechText}> Listen to article</Text>
+                                </View>
+                            </Pressable>}
+                            {isSpeaking && !isPaused &&
+                                <Pressable onPress={() => pauseSpeech()}>
                                     <View style={styles.speech}>
-                                        <Ionicons name='volume-medium' size={24} color={'#4343dcff'} />
-                                        <Text style={styles.speechText}> Listen to article</Text>
+                                        <Ionicons name='pause-outline' size={24} color={'#4343dcff'} />
+                                        <Text style={styles.speechText}> Pause article</Text>
                                     </View>
                                 </Pressable>}
-                                {isSpeaking && !isPaused &&
-                                    <Pressable onPress={() => pauseSpeech()}>
-                                        <View style={styles.speech}>
-                                            <Ionicons name='pause-outline' size={24} color={'#4343dcff'} />
-                                            <Text style={styles.speechText}> Pause article</Text>
-                                        </View>
-                                    </Pressable>}
-                                {isSpeaking && isPaused &&
-                                    <Pressable onPress={() => resumeSpeech()}>
-                                        <View style={styles.speech}>
-                                            <Ionicons name='volume-medium' size={24} color={'#4343dcff'} />
-                                            <Text style={styles.speechText}> Resume listening</Text>
-                                        </View>
-                                    </Pressable>}
-                                <View style={styles.dateAndAuthor}>
-                                    <Text><Ionicons name="calendar" size={16} color="blue" /> {new Date(article.publishedat).toLocaleDateString()}</Text>
-                                    <Text style={styles.author}>{!article.creator ? "Anonymous" : article.creator}</Text>
-                                </View>
-                                <Text style={styles.content}>
-                                    {article.content}
-                                </Text>
+                            {isSpeaking && isPaused &&
+                                <Pressable onPress={() => resumeSpeech()}>
+                                    <View style={styles.speech}>
+                                        <Ionicons name='volume-medium' size={24} color={'#4343dcff'} />
+                                        <Text style={styles.speechText}> Resume listening</Text>
+                                    </View>
+                                </Pressable>}
+                            <View style={styles.dateAndAuthor}>
+                                <Text><Ionicons name="calendar" size={16} color="blue" /> {new Date(article.publishedat).toLocaleDateString()}</Text>
+                                <Text style={styles.author}>{!article.creator ? "Anonymous" : article.creator}</Text>
+                            </View>
+                            <Text style={styles.content}>
+                                {article.content}
+                            </Text>
+
+
+                            <View style={{ flexGrow: 1 }}>
                                 {user ?
                                     <ChatBox article_id={params.article_id}></ChatBox> :
                                     <View style={{ alignSelf: 'center', marginVertical: 8, padding: 8, justifyContent: 'center', alignItems: 'center', borderRadius: 8, borderWidth: 0.5 }}>
@@ -177,11 +181,11 @@ export default function About() {
                                             <Pressable onPress={() => { router.push('/login') }} style={{ padding: 16, backgroundColor: "#0000ff", borderRadius: 8, borderWidth: 1, marginRight: 8 }}><Text style={{ color: 'white', fontWeight: 'bold' }}>Log in</Text></Pressable>
                                         </View>
                                     </View>}
+                            </View>
 
-                            </ScrollView >
-                        </View>
-                    </KeyboardAvoidingView>
-                </KeyboardProvider>
+                        </ScrollView >
+                    </KeyboardAvoidingView >
+                </View >
             }
         </>
     );
