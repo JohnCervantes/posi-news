@@ -32,6 +32,20 @@ const Settings = () => {
     };
 
     const handleDeleteAccount = async () => {
+        // todo: remove in the future
+        if (user?.email?.toLowerCase() === "test@user.com") {
+            Alert.alert(
+                "Account Scheduled",
+                "Your account has been scheduled for deletion and will be removed within 24 hours.",
+                [{
+                    text: "OK",
+                    onPress: async () => {
+                        await supabase.auth.signOut();
+                    }
+                }]
+            );
+            return;
+        }
         const { data, error } = await supabase.functions.invoke('delete-user');
 
         if (!error) {

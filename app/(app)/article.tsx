@@ -163,7 +163,9 @@ export default function About() {
                                 </Pressable>}
                             <View style={styles.dateAndAuthor}>
                                 <Text><Ionicons name="calendar" size={16} color="blue" /> {new Date(article.publishedat).toLocaleDateString()}</Text>
-                                <Text style={styles.author}>{!article.creator ? "Anonymous" : article.creator}</Text>
+                                <View style={{ maxWidth: 175 }}>
+                                    {article.creator && <Text numberOfLines={1} ellipsizeMode='tail' style={styles.author}>{article.creator}</Text>}
+                                </View>
                             </View>
                             <Text style={styles.content}>
                                 {article.content}

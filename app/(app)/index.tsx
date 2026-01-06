@@ -67,9 +67,11 @@ export default function Index() {
 
       <Image source={item.image_url === "" ? require("@/assets/images/default-article.png") : { uri: item.image_url }} style={styles.image} transition={1000} contentFit='cover' placeholder={{ blurhash: "|fF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[" }} />
       <Text numberOfLines={5} ellipsizeMode='tail' style={styles.nameText}>{item.description}</Text>
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-        <View style={[styles.button, { paddingVertical: 4, paddingHorizontal: 8 }]}><Text>{item.country[0].toUpperCase() + item.country.substring(1)}</Text></View>
-        <Text style={styles.author}>{item.creator && `By ${item.creator}`}</Text>
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', overflow: 'hidden' }}>
+        <View style={[styles.button, { paddingVertical: 4, paddingHorizontal: 8 }]}><Text>{item.country === "united states of america" ? "Usa" : item.country[0].toUpperCase() + item.country.substring(1)}</Text></View>
+        <View style={{maxWidth: 175}}>
+          <Text numberOfLines={1} ellipsizeMode='tail' style={styles.author}>{item.creator && `By ${item.creator}`}</Text>
+        </View>
       </View>
     </Pressable>
   );
@@ -87,7 +89,7 @@ export default function Index() {
         <Text style={styles.header}>Uplifting Stories</Text>
         <ScrollView horizontal={true} contentContainerStyle={{ paddingHorizontal: 16, marginBottom: 16, alignItems: 'baseline', columnGap: 8, minHeight: 60 }}>
 
-          {["all", "business", "health", "science", "technology", "environment"].map((category) => {
+          {["all", "lifestyle", "health", "science", "technology", "education"].map((category) => {
             return <Pressable key={category} style={({ pressed }) => [styles.button, {
               backgroundColor: activeCategory === category ? "darkblue" : "gray",
               opacity: pressed ? 0.5 : 1
